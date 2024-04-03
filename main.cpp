@@ -66,7 +66,7 @@ public:
 
     Stack() : head(nullptr), tail(nullptr) {}
 
-    Stack(Stack &&other) : Stack() {
+    Stack(Stack &&other) noexcept: Stack() {
         this->head = other.head;
         this->tail = other.tail;
 
@@ -469,14 +469,18 @@ class Parser {
 public:
     Parser() : dotFound(false) {}
 
+    /**
+     * @brief Reset parser state and parse input from stdin
+     * @return Postfix equation
+     */
     Stack<Token> operator()() {
+        dotFound = false;
+        stack.clear();
+        postFixEquation.clear();
         return parse();
     }
 
     Stack<Token> parse() {
-        dotFound = false;
-        stack.clear();
-        postFixEquation.clear();
         int count = 0;
         recursiveParseSingleLine(count, true);
         return postFixEquation;
@@ -556,6 +560,7 @@ public:
     }
 
     static int charToPriority(char c) {
+        // TODO maybe move this to Token class as it seems more fitting
         switch (c) {
             case '+':
             case '-':
