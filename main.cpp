@@ -1,4 +1,5 @@
 #include <iostream>
+#include <utility>
 
 template<typename T>
 class Option {
@@ -202,6 +203,10 @@ public:
         return length;
     }
 
+    bool isEmpty() const {
+        return head == nullptr && tail == nullptr;
+    }
+
     /**
      * @brief Deletes all elements in the stack
      */
@@ -321,13 +326,6 @@ namespace Operations {
 class Token {
 public:
     enum TYPE {
-        NUMBER,
-        OPERATION,
-        LEFT_BRACKET,
-        OTHER
-    } type;
-
-    enum OPERATION {
         ADD,
         SUB,
         MUL,
@@ -336,50 +334,51 @@ public:
         IF,
         MAX,
         MIN,
+        NUMBER,
+        LEFT_BRACKET,
         NONE
     } operation;
     int priority;
     int number; // if NUMBER then NUMBER; if MAX or MIN then number of arguments
 
     explicit Token(char c) {
-        type = TYPE::OPERATION;
+//        type = TYPE::TYPE;
         number = 0;
         switch (c) {
             case '+':
-                operation = OPERATION::ADD;
+                operation = TYPE::ADD;
                 priority = 1;
                 break;
             case '-':
-                operation = OPERATION::SUB;
+                operation = TYPE::SUB;
                 priority = 1;
                 break;
             case '*':
-                operation = OPERATION::MUL;
+                operation = TYPE::MUL;
                 priority = 2;
                 break;
             case '/':
-                operation = OPERATION::DIV;
+                operation = TYPE::DIV;
                 priority = 2;
                 break;
             case 'N':
-                operation = OPERATION::NEG;
+                operation = TYPE::NEG;
                 priority = 3;
                 break;
             case 'F':
-                operation = OPERATION::IF;
+                operation = TYPE::IF;
                 priority = 3;
                 break;
             case 'I':
-                operation = OPERATION::MIN;
+                operation = TYPE::MIN;
                 priority = 4;
                 break;
             case 'A':
-                operation = OPERATION::MAX;
+                operation = TYPE::MAX;
                 priority = 4;
                 break;
             case '(':
-                type = TYPE::LEFT_BRACKET;
-                operation = OPERATION::NONE;
+                operation = TYPE::LEFT_BRACKET;
                 priority = 0;
                 break;
             default:
@@ -388,22 +387,20 @@ public:
     }
 
     explicit Token(int num) {
-        type = TYPE::NUMBER;
+        operation = TYPE::NUMBER;
         number = num;
         priority = 99;
-        operation = OPERATION::NONE;
     }
 
     Token(char c, int num) {
-        type = TYPE::OPERATION;
         number = num;
         priority = 4;
         switch (c) {
             case 'I':
-                operation = OPERATION::MIN;
+                operation = TYPE::MIN;
                 break;
             case 'A':
-                operation = OPERATION::MAX;
+                operation = TYPE::MAX;
                 break;
             default:
                 throw std::invalid_argument("Invalid operation");
@@ -411,13 +408,12 @@ public:
     }
 
     Token() {
-        type = TYPE::OTHER;
-        operation = OPERATION::NONE;
+        operation = TYPE::NONE;
         priority = 0;
         number = 0;
     }
 
-    static char toChar(enum OPERATION operation) {
+    static char toChar(enum TYPE operation) {
         switch (operation) {
             case ADD:
                 return '+';
@@ -451,7 +447,7 @@ void flushStackUntil(int priority, Stack<Token> &source, Stack<Token> &sink) {
 
     while (tokenPtr->priority >= priority) {
         token = *source.pop_back().getValue();
-        if (token.type == Token::TYPE::LEFT_BRACKET) {
+        if (token.operation == Token::TYPE::LEFT_BRACKET) {
             break;
         }
         sink.push_back(new Token(token));
@@ -504,7 +500,7 @@ public:
                 postFixEquation.push_back(new Token(num));
 
                 if (stack.peek_back().hasValue()
-                    && stack.peek_back().getValue()->operation == Token::OPERATION::NEG) {
+                    && stack.peek_back().getValue()->operation == Token::TYPE::NEG) {
                     Token token = *stack.pop_back().getValue();
                     postFixEquation.push_back(new Token(token));
                 }
@@ -523,7 +519,7 @@ public:
             } else if (buff[0] == 'N') {
                 // negation
                 Option<Token> peek = stack.peek_back();
-                if (peek.hasValue() && peek.getValue()->operation == Token::OPERATION::NEG) {
+                if (peek.hasValue() && peek.getValue()->operation == Token::TYPE::NEG) {
                     stack.push_back(new Token('N'));
                 } else {
                     flushStackUntil(charToPriority('N'), stack, postFixEquation);
@@ -583,29 +579,81 @@ public:
     }
 } parseStdInToPostfix;
 
+class Equation {
+    Stack<Token> postFixEquation;
+    Stack<int> stack;
+
+public:
+    explicit Equation(Stack<Token> postFixEquation) : postFixEquation(std::move(postFixEquation)) {}
+
+    explicit Equation() : postFixEquation() {}
+
+    void evaluateAndPrint() {
+        while (!postFixEquation.isEmpty()) {
+            Token t = *postFixEquation.pop_back().getValue();
+
+            if (t.operation != Token::TYPE::NUMBER) {
+
+            }
+
+            evaluateSingleOperation(t);
+        }
+    }
+
+    void printOperationAndStack(const Token &t) {
+
+    }
+
+    void evaluateSingleOperation(const Token &t) {
+        switch (t.operation) {
+            case Token::TYPE::ADD:
+                Operations::add(stack);
+                break;
+            case Token::TYPE::SUB:
+                Operations::sub(stack);
+                break;
+            case Token::TYPE::MUL:
+                Operations::mul(stack);
+                break;
+            case Token::TYPE::DIV:
+                Operations::div(stack);
+                break;
+            case Token::TYPE::NEG:
+                Operations::neg(stack);
+                break;
+            case Token::TYPE::IF:
+                Operations::ifFunc(stack);
+                break;
+            case Token::TYPE::MAX:
+                stack.push_back(new int(t.number));
+                Operations::max(stack);
+                break;
+            case Token::TYPE::MIN:
+                stack.push_back(new int(t.number));
+                Operations::min(stack);
+                break;
+            case Token::TYPE::NUMBER:
+                stack.push_back(new int(t.number));
+                break;
+            default:
+                break;
+        }
+    }
+};
+
 int main() {
 //    freopen("test0.txt", "r", stdin); // input redirected in CLion compile settings
-
-//    int count = 0;
-//    Stack<Token> stack;
-//    Stack<Token> postFixEquation;
-//    parseSingleLine(postFixEquation, stack, count, true);
-//    parser.recursiveParseSingleLine(count, true);
-//    postFixEquation = parser.getPostFixEquation();
-//    Parser parser;
-//    postFixEquation = parser.parse();
     Stack<Token> postFixEquation = parseStdInToPostfix();
-
     while (postFixEquation.peek_front().hasValue()) {
         Token token = *postFixEquation.pop_front().getValue();
-        if (token.type == Token::TYPE::NUMBER) {
+        if (token.operation == Token::TYPE::NUMBER) {
             std::cout << token.number;
-        } else if (token.operation == Token::OPERATION::MAX || token.operation == Token::OPERATION::MIN) {
+        } else if (token.operation == Token::TYPE::MAX || token.operation == Token::TYPE::MIN) {
             std::cout << ((Token::toChar(token.operation) == 'A') ? "MAX" : "MIN");
             std::cout << token.number;
-        } else if (token.operation == Token::OPERATION::IF) {
+        } else if (token.operation == Token::TYPE::IF) {
             std::cout << "IF";
-        } else if (token.type == Token::TYPE::OPERATION) {
+        } else if (token.operation != Token::TYPE::NONE) {
             std::cout << Token::toChar(token.operation);
         }
         std::cout << ' ';
