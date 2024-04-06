@@ -1,3 +1,17 @@
+/**
+ * <h2>Note:</h2>
+ * <ul>
+ *  <li>
+ *      I did the whole thing in one file to make it easier to upload to STOS (Grading system)
+ *  </li>
+ *  <li>
+ *       There are some unused functions that were either, used for debugging, or
+ *       I made them when writing general templates and wanted to keep them to have a complete implementation,
+ *       as writing a whole class at once was easier than constantly returning to it in order to add missing functionality.
+ *  </li>
+ * </ul>
+ */
+
 #include <iostream>
 
 template<typename T>
@@ -618,7 +632,7 @@ public:
             } else if (buff[0] == '+' || buff[0] == '-') {
                 flushStackUntil(Token::charToPriority(buff[0]), stack, postFixEquation);
                 stack.push_back(new Token(buff[0]));
-                
+
             } else if (buff[0] == '*' || buff[0] == '/') {
                 flushStackUntil(Token::charToPriority(buff[0]), stack, postFixEquation);
                 stack.push_back(new Token(buff[0]));
