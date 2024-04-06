@@ -1,5 +1,4 @@
 #include <iostream>
-#include <utility>
 
 template<typename T>
 class Option {
@@ -224,7 +223,19 @@ public:
             current = next;
         }
     }
+
+    void print();
 };
+
+template<>
+void Stack<int>::print() {
+    Node *current = tail;
+    while (current != nullptr) {
+        printf("%d ", *current->data);
+        current = current->previous;
+    }
+    printf("\n");
+}
 
 namespace Operations {
     void add(Stack<int> &stack) {
@@ -239,7 +250,7 @@ namespace Operations {
         Option<int> val1 = stack.pop_back();
         Option<int> val2 = stack.pop_back();
         if (val1.hasValue() && val2.hasValue()) {
-            stack.push_back(new int(*val1.getValue() - *val2.getValue()));
+            stack.push_back(new int(*val2.getValue() - *val1.getValue()));
         }
     }
 
@@ -255,7 +266,7 @@ namespace Operations {
         Option<int> val1 = stack.pop_back();
         Option<int> val2 = stack.pop_back();
         if (val1.hasValue() && val2.hasValue()) {
-            stack.push_back(new int(*val1.getValue() / *val2.getValue()));
+            stack.push_back(new int(*val2.getValue() / *val1.getValue()));
         }
     }
 
@@ -271,7 +282,7 @@ namespace Operations {
         Option<int> val2 = stack.pop_back();
         Option<int> val3 = stack.pop_back();
         if (val1.hasValue() && val2.hasValue() && val3.hasValue()) {
-            stack.push_back(new int(*val1.getValue() > 0 ? *val2.getValue() : *val3.getValue()));
+            stack.push_back(new int(*val3.getValue() > 0 ? *val2.getValue() : *val1.getValue()));
         }
     }
 
@@ -436,7 +447,51 @@ public:
                 return ' ';
         }
     }
+
+    void print() const {
+        switch (operation) {
+            case ADD:
+                printf("+ ");
+                break;
+            case SUB:
+                printf("- ");
+                break;
+            case MUL:
+                printf("* ");
+                break;
+            case DIV:
+                printf("/ ");
+                break;
+            case NEG:
+                printf("N ");
+                break;
+            case IF:
+                printf("IF ");
+                break;
+            case MAX:
+                printf("MAX%d ", number);
+                break;
+            case MIN:
+                printf("MIN%d ", number);
+                break;
+            case NUMBER:
+                printf("%d ", number);
+                break;
+            default:
+                break;
+        }
+    }
 };
+
+template<>
+void Stack<Token>::print() {
+    Node *current = head;
+    while (current != nullptr) {
+        current->data->print();
+        current = current->next;
+    }
+    printf("\n");
+}
 
 void flushStackUntil(int priority, Stack<Token> &source, Stack<Token> &sink) {
     if (!source.peek_back().hasValue()) {
@@ -590,18 +645,18 @@ public:
 
     void evaluateAndPrint() {
         while (!postFixEquation.isEmpty()) {
-            Token t = *postFixEquation.pop_back().getValue();
-
+            Token t = *postFixEquation.pop_front().getValue();
             if (t.operation != Token::TYPE::NUMBER) {
-
+                t.print();
+                stack.print();
             }
-
             evaluateSingleOperation(t);
         }
-    }
 
-    void printOperationAndStack(const Token &t) {
-
+        Option<int> answer = stack.pop_back();
+        if (answer.hasValue()) {
+            printf("%d\n", *answer.getValue());
+        }
     }
 
     void evaluateSingleOperation(const Token &t) {
@@ -643,20 +698,14 @@ public:
 
 int main() {
 //    freopen("test0.txt", "r", stdin); // input redirected in CLion compile settings
-    Stack<Token> postFixEquation = parseStdInToPostfix();
-    while (postFixEquation.peek_front().hasValue()) {
-        Token token = *postFixEquation.pop_front().getValue();
-        if (token.operation == Token::TYPE::NUMBER) {
-            std::cout << token.number;
-        } else if (token.operation == Token::TYPE::MAX || token.operation == Token::TYPE::MIN) {
-            std::cout << ((Token::toChar(token.operation) == 'A') ? "MAX" : "MIN");
-            std::cout << token.number;
-        } else if (token.operation == Token::TYPE::IF) {
-            std::cout << "IF";
-        } else if (token.operation != Token::TYPE::NONE) {
-            std::cout << Token::toChar(token.operation);
-        }
-        std::cout << ' ';
+    int equationCount;
+    scanf("%d", &equationCount);
+    for (int i = 0; i < equationCount; i++) {
+        Stack<Token> postFixEquation = parseStdInToPostfix();
+        postFixEquation.print();
+        Equation equation(postFixEquation);
+        equation.evaluateAndPrint();
+        printf("\n");
     }
     return 0;
 }
