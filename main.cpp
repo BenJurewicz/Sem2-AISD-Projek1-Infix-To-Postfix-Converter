@@ -10,12 +10,13 @@ class Option {
         if (_isValueOwner && _hasValue) {
             delete _value;
         }
+
+        _value = nullptr;
     }
 
 public:
     Option() : _value(nullptr), _hasValue(false), _isValueOwner(false) {}
 
-    // TODO implement other constructors
     Option(const Option &other) {
         _value = new T(*other._value);
         _hasValue = other._hasValue;
@@ -106,8 +107,6 @@ class Stack {
         Node(T *data, Node *next, Node *previous) : data(data), next(next), previous(previous) {}
 
         ~Node() {
-            // Note: in push_back and push_front, instead of copying by value and then deleting data
-            // Note: we can just move the data pointer to the return value
             delete data;
 
         }
@@ -243,16 +242,6 @@ public:
         return result;
     }
 
-    size_t len() const {
-        size_t length = 0;
-        Node *current = head;
-        while (current != nullptr) {
-            length++;
-            current = current->next;
-        }
-        return length;
-    }
-
     bool isEmpty() const {
         return head == nullptr && tail == nullptr;
     }
@@ -277,12 +266,6 @@ public:
 
     ~Stack() {
         clear();
-//        Node *current = head;
-//        while (current != nullptr) {
-//            Node *next = current->next;
-//            delete current;
-//            current = next;
-//        }
     }
 
     void print();
@@ -348,7 +331,9 @@ namespace Operations {
         }
     }
 
-    // functions below need argument count to be pushed to stack before evaluation
+    /**
+     *  Needs argument count to be push_back'ed to the stack before calling
+     */
     void max(Stack<int> &stack) {
         Option<int> count = stack.pop_back();
         if (!count.hasValue()) {
@@ -372,6 +357,9 @@ namespace Operations {
         stack.push_back(new int(currentMax));
     }
 
+    /**
+     *  Needs argument count to be push_back'ed to the stack before calling
+     */
     void min(Stack<int> &stack) {
         Option<int> count = stack.pop_back();
         if (!count.hasValue()) {
@@ -478,30 +466,6 @@ public:
         number = 0;
     }
 
-    static char toChar(enum TYPE operation) {
-        switch (operation) {
-            case ADD:
-                return '+';
-            case SUB:
-                return '-';
-            case MUL:
-                return '*';
-            case DIV:
-                return '/';
-            case NEG:
-                return 'N';
-            case IF:
-                return 'F';
-            case MAX:
-                return 'A';
-            case MIN:
-                return 'I';
-            case NONE:
-            default:
-                return ' ';
-        }
-    }
-
     static int charToPriority(char c) {
         switch (c) {
             case '(':
@@ -579,7 +543,6 @@ void Stack<Token>::print() {
  * @param priority the priority to stop at, if -1 then it will flush the whole stack
  */
 void flushStackUntil(int priority, Stack<Token> &source, Stack<Token> &sink) {
-    // TODO maybe move this function to parser and rename to flushOperationStackToPostfixUntil ????
     if (!source.peek_back().hasValue()) {
         return;
     }
@@ -623,19 +586,18 @@ public:
         return std::move(postFixEquation);
     }
 
-    // TODO rename &count to argumentCount
-    void recursiveParseSingleLine(int &count, bool isMainLoop) {
+    void recursiveParseSingleLine(int &argumentCount, bool isMainLoop) {
         char buff[12];
         int bracketCount = 0;
         scanf("%s", buff);
-//        std::cin >> buff;
+
         while (!dotFound) {
             if (buff[0] == '.') {
                 dotFound = true;
                 break;
 
             } else if (buff[0] == ',') {
-                count++;
+                argumentCount++;
                 flushStackUntil(Token::charToPriority(buff[0]), stack, postFixEquation);
 
             } else if ('0' <= buff[0] && buff[0] <= '9') {
@@ -656,6 +618,7 @@ public:
             } else if (buff[0] == '+' || buff[0] == '-') {
                 flushStackUntil(Token::charToPriority(buff[0]), stack, postFixEquation);
                 stack.push_back(new Token(buff[0]));
+                
             } else if (buff[0] == '*' || buff[0] == '/') {
                 flushStackUntil(Token::charToPriority(buff[0]), stack, postFixEquation);
                 stack.push_back(new Token(buff[0]));
@@ -694,7 +657,6 @@ public:
 
             }
             scanf("%s", buff);
-//            std::cin >> buff;
         }
 
         flushStackUntil(-1, stack, postFixEquation);
@@ -769,7 +731,6 @@ public:
 };
 
 int main() {
-//    freopen("test0.txt", "r", stdin); // input redirected in CLion compile settings
     int equationCount;
     scanf("%d", &equationCount);
 
