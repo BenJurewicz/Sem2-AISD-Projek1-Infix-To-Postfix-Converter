@@ -5,20 +5,75 @@ class Option {
     T *_value;
     bool _hasValue;
     bool _isValueOwner;
+
+    inline void deleteValueSafely() {
+        if (_isValueOwner && _hasValue) {
+            delete _value;
+        }
+    }
+
 public:
-    Option() : _hasValue(false), _isValueOwner(false) {}
+    Option() : _value(nullptr), _hasValue(false), _isValueOwner(false) {}
+
+    // TODO implement other constructors
+    Option(const Option &other) {
+        _value = new T(*other._value);
+        _hasValue = other._hasValue;
+        _isValueOwner = true;
+    }
+
+    Option(Option &&other) noexcept {
+        _value = other._value;
+        _hasValue = other._hasValue;
+        _isValueOwner = other._isValueOwner;
+
+        other._value = nullptr;
+        other._hasValue = false;
+        other._isValueOwner = false;
+    }
+
+    Option &operator=(const Option &other) {
+        if (this == &other) {
+            return *this;
+        }
+        deleteValueSafely();
+
+        _value = new T(*other._value);
+        _hasValue = other._hasValue;
+        _isValueOwner = true;
+
+        return *this;
+    }
+
+    Option &operator=(Option &&other) noexcept {
+        if (this == &other) {
+            return *this;
+        }
+        deleteValueSafely();
+
+        _value = other._value;
+        _hasValue = other._hasValue;
+        _isValueOwner = other._isValueOwner;
+
+        other._value = nullptr;
+        other._hasValue = false;
+        other._isValueOwner = false;
+        return *this;
+    }
 
     explicit Option(T *value) : _value(value), _hasValue(true), _isValueOwner(false) {}
 
     explicit Option(T value) : _value(new T(value)), _hasValue(true), _isValueOwner(true) {}
 
     void setValue(T *value) {
+        deleteValueSafely();
         _value = value;
         _hasValue = true;
         _isValueOwner = false;
     }
 
     void setValue(T value) {
+        deleteValueSafely();
         _value = new T(value);
         _hasValue = true;
         _isValueOwner = true;
@@ -28,7 +83,7 @@ public:
         return _hasValue;
     }
 
-    const T *getValue() {
+    const T *getValue() const {
         if (_hasValue) {
             return _value;
         }
@@ -36,9 +91,7 @@ public:
     }
 
     ~Option() {
-        if (_isValueOwner) {
-            delete _value;
-        }
+        deleteValueSafely();
     }
 };
 
@@ -56,6 +109,7 @@ class Stack {
             // Note: in push_back and push_front, instead of copying by value and then deleting data
             // Note: we can just move the data pointer to the return value
             delete data;
+
         }
     };
 
@@ -67,8 +121,8 @@ public:
     Stack() : head(nullptr), tail(nullptr) {}
 
     Stack(Stack &&other) noexcept: Stack() {
-        this->head = other.head;
-        this->tail = other.tail;
+        head = other.head;
+        tail = other.tail;
 
         other.head = nullptr;
         other.tail = nullptr;
@@ -82,18 +136,17 @@ public:
         }
     }
 
-    Stack &operator=(Stack &&other) {
+    Stack &operator=(Stack &&other) noexcept {
         if (this == &other) {
             return *this;
         }
-        this->clear();
+        clear();
 
-        this->head = other.head;
-        this->tail = other.tail;
+        head = other.head;
+        tail = other.tail;
 
         other.head = nullptr;
         other.tail = nullptr;
-
         return *this;
     }
 
@@ -102,13 +155,11 @@ public:
             return *this;
         }
         this->clear();
-
         Node *current = other.head;
         while (current != nullptr) {
             push_back(new T(*current->data));
             current = current->next;
         }
-
         return *this;
     }
 
@@ -210,18 +261,28 @@ public:
      * @brief Deletes all elements in the stack
      */
     void clear() {
-        while (head != nullptr) {
-            pop_back();
-        }
-    }
-
-    ~Stack() {
+//        while (head != nullptr) {
+//            pop_back();
+//        }
         Node *current = head;
         while (current != nullptr) {
             Node *next = current->next;
             delete current;
             current = next;
         }
+
+        head = nullptr;
+        tail = nullptr;
+    }
+
+    ~Stack() {
+        clear();
+//        Node *current = head;
+//        while (current != nullptr) {
+//            Node *next = current->next;
+//            delete current;
+//            current = next;
+//        }
     }
 
     void print();
@@ -236,6 +297,7 @@ void Stack<int>::print() {
     }
     printf("\n");
 }
+
 
 namespace Operations {
     void add(Stack<int> &stack) {
@@ -350,47 +412,39 @@ public:
         NONE
     } operation;
     int priority;
-    int number; // if NUMBER then NUMBER; if MAX or MIN then number of arguments
+    int number; // if NUMBER then just the number; if MAX or MIN then number of arguments
 
     explicit Token(char c) {
-//        type = TYPE::TYPE;
         number = 0;
+        priority = charToPriority(c);
+
         switch (c) {
+            case '(':
+                operation = TYPE::LEFT_BRACKET;
+                break;
             case '+':
                 operation = TYPE::ADD;
-                priority = 1;
                 break;
             case '-':
                 operation = TYPE::SUB;
-                priority = 1;
                 break;
             case '*':
                 operation = TYPE::MUL;
-                priority = 2;
                 break;
             case '/':
                 operation = TYPE::DIV;
-                priority = 2;
                 break;
             case 'N':
                 operation = TYPE::NEG;
-                priority = 3;
                 break;
             case 'F':
                 operation = TYPE::IF;
-                priority = 3;
                 break;
             case 'I':
                 operation = TYPE::MIN;
-                priority = 4;
                 break;
             case 'A':
                 operation = TYPE::MAX;
-                priority = 4;
-                break;
-            case '(':
-                operation = TYPE::LEFT_BRACKET;
-                priority = 0;
                 break;
             default:
                 throw std::invalid_argument("Invalid operation");
@@ -448,6 +502,32 @@ public:
         }
     }
 
+    static int charToPriority(char c) {
+        switch (c) {
+            case '(':
+            case ')':
+                return 0;
+            case ',':
+                // Unused in Token, but needed for Parser::recursiveParseSingleLine
+                return 1;
+            case '+':
+            case '-':
+                return 2;
+            case '*':
+            case '/':
+                return 3;
+            case 'N': // negation
+                return 4;
+            case 'F': // if
+                return 5;
+            case 'I': // min
+            case 'A': // max
+                return 6;
+            default:
+                throw std::invalid_argument("Invalid operation");
+        }
+    }
+
     void print() const {
         switch (operation) {
             case ADD:
@@ -488,12 +568,18 @@ void Stack<Token>::print() {
     Node *current = head;
     while (current != nullptr) {
         current->data->print();
+        printf(" "); // Adding a space to make it look like examples
         current = current->next;
     }
     printf("\n");
 }
 
+/**
+ * @brief Move elements from one stack to the other until you reach a element with lower priority
+ * @param priority the priority to stop at, if -1 then it will flush the whole stack
+ */
 void flushStackUntil(int priority, Stack<Token> &source, Stack<Token> &sink) {
+    // TODO maybe move this function to parser and rename to flushOperationStackToPostfixUntil ????
     if (!source.peek_back().hasValue()) {
         return;
     }
@@ -524,24 +610,25 @@ public:
      * @brief Reset parser state and parse input from stdin
      * @return Postfix equation
      */
-    Stack<Token> operator()() {
+    Stack<Token> &&operator()() {
         dotFound = false;
         stack.clear();
         postFixEquation.clear();
         return parse();
     }
 
-    Stack<Token> parse() {
+    Stack<Token> &&parse() {
         int count = 0;
         recursiveParseSingleLine(count, true);
-        return postFixEquation;
+        return std::move(postFixEquation);
     }
 
+    // TODO rename &count to argumentCount
     void recursiveParseSingleLine(int &count, bool isMainLoop) {
         char buff[12];
         int bracketCount = 0;
-        //scanf("%s", buff);
-        std::cin >> buff;
+        scanf("%s", buff);
+//        std::cin >> buff;
         while (!dotFound) {
             if (buff[0] == '.') {
                 dotFound = true;
@@ -549,11 +636,13 @@ public:
 
             } else if (buff[0] == ',') {
                 count++;
+                flushStackUntil(Token::charToPriority(buff[0]), stack, postFixEquation);
 
             } else if ('0' <= buff[0] && buff[0] <= '9') {
                 int num = atoi(buff);
                 postFixEquation.push_back(new Token(num));
 
+                // push negation if it was the last encountered operation
                 if (stack.peek_back().hasValue()
                     && stack.peek_back().getValue()->operation == Token::TYPE::NEG) {
                     Token token = *stack.pop_back().getValue();
@@ -565,10 +654,10 @@ public:
                 stack.push_back(new Token(buff[0]));
 
             } else if (buff[0] == '+' || buff[0] == '-') {
+                flushStackUntil(Token::charToPriority(buff[0]), stack, postFixEquation);
                 stack.push_back(new Token(buff[0]));
-
             } else if (buff[0] == '*' || buff[0] == '/') {
-                flushStackUntil(charToPriority(buff[0]), stack, postFixEquation);
+                flushStackUntil(Token::charToPriority(buff[0]), stack, postFixEquation);
                 stack.push_back(new Token(buff[0]));
 
             } else if (buff[0] == 'N') {
@@ -577,61 +666,40 @@ public:
                 if (peek.hasValue() && peek.getValue()->operation == Token::TYPE::NEG) {
                     stack.push_back(new Token('N'));
                 } else {
-                    flushStackUntil(charToPriority('N'), stack, postFixEquation);
+                    flushStackUntil(Token::charToPriority('N'), stack, postFixEquation);
                     stack.push_back(new Token('N'));
                 }
 
             } else if (buff[0] == 'I') {
                 // if
-                flushStackUntil(charToPriority('F'), stack, postFixEquation);
-                recursiveParseSingleLine(count, false);
+                int newCount = 0;
+                flushStackUntil(Token::charToPriority('F'), stack, postFixEquation);
+                recursiveParseSingleLine(newCount, false);
                 postFixEquation.push_back(new Token('F'));
 
             } else if (buff[1] == 'I' || buff[1] == 'A') {
                 // min or max
                 int newCount = 1;
-                flushStackUntil(charToPriority(buff[1]), stack, postFixEquation);
+                flushStackUntil(Token::charToPriority(buff[1]), stack, postFixEquation);
                 // maybe change from recursion to a loop with context array
                 recursiveParseSingleLine(newCount, false);
                 postFixEquation.push_back(new Token(buff[1], newCount));
 
             } else if (buff[0] == ')') {
                 bracketCount--;
-                flushStackUntil(charToPriority('('), stack, postFixEquation);
+                flushStackUntil(Token::charToPriority('('), stack, postFixEquation);
                 if (bracketCount == 0 && !isMainLoop) {
                     return;
                 }
 
             }
-            //scanf("%s", buff);
-            std::cin >> buff;
+            scanf("%s", buff);
+//            std::cin >> buff;
         }
 
         flushStackUntil(-1, stack, postFixEquation);
     }
 
-    static int charToPriority(char c) {
-        // TODO maybe move this to Token class as it seems more fitting
-        switch (c) {
-            case '+':
-            case '-':
-                return 1;
-            case '*':
-            case '/':
-                return 2;
-            case 'N':
-            case 'F':
-                return 3;
-            case 'I':
-            case 'A':
-                return 4;
-            case '(':
-            case ')':
-                return 0;
-            default:
-                throw std::invalid_argument("Invalid operation");
-        }
-    }
 } parseStdInToPostfix;
 
 class Equation {
@@ -639,7 +707,7 @@ class Equation {
     Stack<int> stack;
 
 public:
-    explicit Equation(Stack<Token> postFixEquation) : postFixEquation(std::move(postFixEquation)) {}
+    explicit Equation(Stack<Token> &&postFixEquation) : postFixEquation(std::move(postFixEquation)) {}
 
     explicit Equation() : postFixEquation() {}
 
@@ -649,6 +717,10 @@ public:
             if (t.operation != Token::TYPE::NUMBER) {
                 t.print();
                 stack.print();
+            }
+            if (t.operation == Token::TYPE::DIV && *stack.peek_back().getValue() == 0) {
+                printf("ERROR\n");
+                return;
             }
             evaluateSingleOperation(t);
         }
@@ -700,10 +772,11 @@ int main() {
 //    freopen("test0.txt", "r", stdin); // input redirected in CLion compile settings
     int equationCount;
     scanf("%d", &equationCount);
+
     for (int i = 0; i < equationCount; i++) {
         Stack<Token> postFixEquation = parseStdInToPostfix();
         postFixEquation.print();
-        Equation equation(postFixEquation);
+        Equation equation(std::move(postFixEquation));
         equation.evaluateAndPrint();
         printf("\n");
     }

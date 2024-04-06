@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<!-- saved from url=(0060)https://stos.eti.pg.gda.pl/index.php?p=show&pid=1444&cid=625 -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<title>STOS - System Testowania i Oceny zadań Studenckich</title>
+<link rel="stylesheet" type="text/css" href="./STOS - System Testowania i Oceny zadań Studenckich_files/stos.css">
+<style type="text/css">
+#problemtext	{ max-width: 90ex; text-align: justify; }
+</style><script>
+var CO=function(){return new Date(1712268887*1000).getTime()-new Date().getTime();}();
+var ST=function(){var a=new Date();a.setSeconds(a.getSeconds()+(900));return a;}();
+function T2(v){return v<10?"0"+v:v.toString();}
+function UT(){var t=new Date();
+if(t>ST)document.getElementById("sesstomark").style.display='inline';
+t.setMilliseconds(t.getMilliseconds()+CO);
+document.getElementById("ctime").innerHTML=T2(t.getHours())+":"+T2(t.getMinutes());}
+window.addEventListener("load",function(){window.setInterval(UT,3000)},false);
+</script><script src="chrome-extension://nngceckbapebfimnlniiiahkandclblb/content/fido2/page-script.js" id="bw-fido2-page-script"></script></head><body><div id="topbar">
+<div id="topbar-time"><span id="ctime">00:15</span><span id="sesstomark" title="Session timeout">⚠</span></div>
+<div id="topbar-menu"><ul class="topmenu"><li><a href="https://stos.eti.pg.gda.pl/index.php?p=viewprzedmiot&amp;cid=625">Contest</a></li><li class="tm-current"><a href="https://stos.eti.pg.gda.pl/index.php?p=show&amp;pid=1444&amp;cid=625">Text</a></li><li><a href="https://stos.eti.pg.gda.pl/index.php?p=submit&amp;pid=1444&amp;cid=625">Submit</a></li><li><a href="https://stos.eti.pg.gda.pl/index.php?p=status&amp;pid=1444&amp;cid=625">Result</a></li><li><a href="https://stos.eti.pg.gda.pl/index.php?p=viewcode&amp;pid=1444&amp;cid=625">View code</a></li></ul></div>
+<div id="topbar-lang">
+<a href="https://stos.eti.pg.gda.pl/index.php?p=show&amp;pid=1444&amp;cid=625&amp;lang=pl"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABEAAAAOCAIAAABGj2DjAAAABGdBTUEAALGPC/xhBQAAACpJREFUKFNj/P//PwOpAKiHVMBAqgaQu4adHgYGYGCThEhTDTF6VA8DAwCHRaplS7LNGAAAAABJRU5ErkJggg==" alt="language: polish" title="PL"></a>
+<a href="https://stos.eti.pg.gda.pl/index.php?p=show&amp;pid=1444&amp;cid=625&amp;lang=en"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABEAAAANCAIAAADAGxJNAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAHJJREFUKFOdUlsSwDAE5P6HVs+gSTpTPgRZSwQSAJAoRFYuEmCf6B00HLFwliT6qaY6e8SDhuigmxssWqNyV4qdTsGRk2lmLd2bFHx01s/FdLouVWrFT3tUZ/Ke1rnPIUd/ndvv/5nsQXxnLs5xd7JrgAdgqX+YMkizYwAAAABJRU5ErkJggg==" alt="language: english" title="EN"></a>
+</div>
+</div><div id="leftside">
+<div class="menublock">
+<div class="menuhead">User</div>
+<span class="menuitem"><a href="https://stos.eti.pg.gda.pl/index.php?p=main">Main page</a></span>
+<span class="menuitem"><a href="https://stos.eti.pg.gda.pl/index.php?p=help">Help</a></span>
+<span class="menuitem"><a href="https://stos.eti.pg.gda.pl/index.php?p=passwordchangeform">Change password</a></span>
+<span class="menuitem"><a href="https://stos.eti.pg.gda.pl/index.php?p=logout">Logout</a></span>
+</div><div class="menublock">
+<div class="menuhead">Student</div>
+<span class="menuitem"><a href="https://stos.eti.pg.gda.pl/index.php?p=przedmioty">Contests</a></span>
+</div></div><!-- leftside -->
+<div id="rightside">
+<div id="error" class="error"></div>
+<div id="content"><h2>Calculator (A&amp;DS)</h2>
+<div id="problemtext"><p><b>Last update: 2024-03-07 </b>(2nd additional remark)</p><p>
+
+</p><p>Write an integer calculator. Use the postfix notation to handle precedence of operators, functions and parentheses.</p>
+
+<h3>Input:</h3>
+<ul>
+<li> <i>n</i> -number of formulas </li>
+<li> <i>n</i> formulas, each in the form given below. </li>
+</ul>
+
+Each formula is a valid expression in an infix notation with functions and ends with a dot ('.'). Each token is separated by some whitespace characters.
+Each operand is a positive integer (although the result of an operation might be negative). Each operator is a single character and every function name consists only of capital letters.
+ 
+<p>The following operations are available, in the ascending order of priority:</p>
+<ul>
+<li> <i>a</i> <b>+</b> <i>b</i>, <i>a</i> <b>-</b> <i>b</i> ; </li>
+<li> <i>a</i> <b>*</b> <i>b</i>, <i>a</i> <b>/</b> <i>b</i> -all operations are made on integers, hence the results of division are rounded down (standard C '/' operator). You cannot divide by 0 (see the Output section); </li>
+<li> <b>IF</b>(<i>a</i>, <i>b</i>, <i>c</i>) -if <i>a</i>&gt;0 return <i>b</i>, otherwise <i>c</i>,
+     <br> <b>N </b><i>a</i> -unary negation, i.e. -<i>a</i>,
+     <br> <b>MIN</b>( <i>a</i><sub>1</sub>,  <i>a</i><sub>2</sub>, ...  ), <b>MAX</b>(<i>a</i><sub>1</sub>,  <i>a</i><sub>2</sub>, ...)  -functions <b>MIN </b>and <b>MAX </b>do not have a restriction on the number of parameters; </li>
+<li> <b>(</b> ... <b>)</b> -parentheses. </li>
+</ul>
+
+
+
+<h3>Output for each formula:</h3>
+<ul>
+<li> the formula in the postfix notation;   </li>
+<li> before executing each operation print the operator or function and the content of the stack; </li>
+<li> the final result;  </li>
+<li> if you encounter a division by 0, print "ERROR" and move to the next expression. 
+</li></ul>
+
+
+<h3>Additional remarks and hints:</h3>
+<ul>
+
+<li> Each instance of <b>MIN<i>i</i> </b>and <b>MAX<i>i</i> </b>function has a specified number of arguments, <i>i</i>, in the postfix notation (see the example output) </li>
+<li> <b>Do not</b> store the given expressions (i.e. in the infix notation), only the latest token should be sufficient. Consequently, you should count the arguments of <b>MIN </b>and <b>MAX </b>during the conversion.  Additional instances of data structures might be required. </li>
+<li> You may assume that all values will be withing range of <b>int</b>. Note that each token is separate. </li>
+<li> Using the type <b>string</b> and data structures from libraries is forbidden.  </li>
+<li> For the full amount of points, a stack based on a list is required. In the case of a stack implemented using an array, the amount of points is scaled by 0.75.  </li>
+<ul>
+<li> This does not mean that stacks are the only permitted data structures. You can use additonal data structures to solve encountered difficulties beyond the basic algorithms from the lecture.</li>
+</ul>
+<li> Remember to clean up any unused memory. Memory leaks will be penalized. </li>
+</ul>
+<p>Examples can be found below the Polish version of the instruction.</p>
+<h3>Polska wersja </h3>
+
+Napisz kalkulator liczb całkowitych. Użyj notacji postfiksowej do obsługi kolejności wykonywania operacji, funkcji i nawiasów.
+
+<h3>Wejście:</h3>
+<ul>
+<li> <i>n</i> -liczba formuł </li>
+<li> <i>n</i> formuł, każda w formie podanej poniżej. </li>
+</ul>
+
+Każda formuła jest prawidłowym wyrażeniem w notacji infiksowej z funkcjami i kończy się kropką ('.'). Każdy token jest oddzielony kilkoma białymi znakami.
+Każdy operand jest dodatnią liczbą całkowitą (chociaż wynik operacji może być ujemny). Każdy operator to pojedynczy znak, a każda nazwa funkcji składa się wyłącznie z wielkich liter.
+ 
+<p>Dostępne są następujące operacje, w kolejności rosnącego priorytetu:</p>
+<ul>
+<li> <i>a</i> <b>+</b> <i>b</i>, <i>a</i> <b>-</b> <i>b</i>; </li>
+<li> <i>a</i> <b>*</b> <i>b</i>, <i>a</i> <b>/</b> <i>b</i> -wszystkie operacje wykonywane są na liczbach całkowitych, stąd wynik dzielenia zaokrąglany jest w dół (standardowy operator '/' w C). Nie można dzielić przez 0 (zobacz przykładowe dane wyjściowe); </li>
+<li> <b>IF</b>(<i>a</i>, <i>b</i>, <i>c</i>) -jeśli <i>a</i>&gt; 0 zwróć <i>b</i>, w przeciwnym razie <i>c</i>,
+      <br> <b>N </b><i>a</i> -jednoargumentowa negacja, czyli -<i>a</i>,
+      <br> <b>MIN</b>( <i>a</i><sub>1</sub>, <i>a</i><sub>2</sub>, ... ) , <b>MAX</b>(<i>a</i><sub>1</sub>, <i>a</i><sub>2</sub>, ...) -funkcje <b>MIN </b>i <b>MAX </b>nie mają ograniczonej liczby parametrów; </li>
+<li> <b>(</b> ... <b>)</b> -nawiasy. </li>
+</ul>
+
+
+
+<h3>Wyjście dla każdej formuły:</h3>
+<ul>
+<li> formuła w notacji postfiksowej ; </li>
+<li> przed wykonaniem każdej operacji wypisz operator lub funkcję i zawartość stosu; </li>
+<li> wynik końcowy; </li>
+<li> jeśli napotkasz dzielenie przez 0, wypisz „ERROR” i przejdź do następnego wyrażenia.
+</li></ul>
+
+
+<h3>Dodatkowe uwagi i wskazówki:</h3>
+<ul>
+
+<li> Każde wystąpienie funkcji <b>MIN<i>i</i> </b>i <b>MAX<i>i</i> </b>ma określoną liczbę argumentów, <i> i</i>, w notacji postfiksowej (zobacz przykładowe dane wyjściowe) </li>
+<li> <b>Nie</b> przechowuj podanych wyrażeń (tj. w notacji infiksowej) w całości, najnowszy token wystarczy. W związku z tym  liczenie argumentów <b>MIN </b> i <b>MAX </b> powinno odbywać się podczas konwersji. Aby to zrobić można wykorzystać dodatkowe wystąpienia struktur danych. </li>
+<li> Możesz założyć, że wszystkie wartości będą mieścić się w zakresie <b>int</b>. Zwróć uwagę, że każdy token jest oddzielony białymi znakami. </li>
+<li> Używanie typu <b>string</b> i struktur danych z bibliotek jest zabronione. </li>
+<li> Do uzyskania pełnej liczby punktów wymagany jest samodzielnie zaimplementowany stos oparty na liście. W przypadku stosu zaimplementowanego za pomocą tablicy, ilość punktów skalowana jest przez 0,75. </li>
+<ul>
+<li> Nie znaczy to, że muszą Państwo używać tylko stosów. Dodatkowe struktury danych mogą ułatwić rozwiązanie problemów spoza podstawowych algorytmów z wykładu.</li>
+</ul>
+<li> Pamiętaj o wyczyszczeniu nieużywanej pamięci. Wycieki pamięci skutkują redukcją punktów. </li>
+</ul>
+
+<h3>Example input:</h3>
+<pre>4
+MIN ( 100 , MAX ( 1 , 34 , 2 ) , 80 ,  MIN ( 66 , 36  , 35 , 77 ) , 50 , 60 ) .
+2 + MIN ( 100 , MAX ( 1 , 6 * 5 + 2 , 2 ) , 80 ,  MIN ( 66 , 36  , 35 , 77 ) , 50 , 60 ) * 3 .
+N 400 + ( 11 - ( 3 * 2 ) ) / 2 + N N 200 .
+IF ( ( 6 + 8 ) , ( 4 / 2 ) , MIN ( 8 , 2 , 1 , 0 , 3 ) ) * 2 * 6 / N ( 3 ) .
+
+</pre>
+
+<h3>Example output:</h3>
+
+<pre>100  1  34  2  MAX3  80  66  36  35  77  MIN4  50  60  MIN6
+MAX3 2 34 1 100
+MIN4 77 35 36 66 80 34 100
+MIN6 60 50 35 80 34 100
+34
+
+2  100  1  6  5  *  2  +  2  MAX3  80  66  36  35  77  MIN4  50  60  MIN6  3  *  +
+* 5 6 1 100 2
++ 2 30 1 100 2
+MAX3 2 32 1 100 2
+MIN4 77 35 36 66 80 32 100 2
+MIN6 60 50 35 80 32 100 2
+* 3 32 2
++ 96 2
+98
+
+400  N  11  3  2  *  -  2  /  +  200  N  N  +
+N 400
+* 2 3 11 -400
+- 6 11 -400
+/ 2 5 -400
++ 2 -400
+N 200 -398
+N -200 -398
++ 200 -398
+-198
+
+6  8  +  4  2  /  8  2  1  0  3  MIN5  IF  2  *  6  *  3  N  /
++ 8 6
+/ 2 4 14
+MIN5 3 0 1 2 8 2 14
+IF 0 2 14
+* 2 2
+* 6 4
+N 3 24
+/ -3 24
+-8
+</pre>
+
+<h3>Further examples:</h3>
+<pre>N ( ( MAX ( 0 , 1 ) + N ( 1 ) ) ) . // this is the input expression 
+
+0  1  MAX2  1  N  +  N              // the postfix notation
+MAX2 1 0                            // before each calculation print the operator, then the content of the stack
+N 1 1                               
++ -1 1
+N 0
+0                                   // final result
+
+MIN ( MIN ( IF ( 0 , 8 , 2 ) ) , MAX ( MIN ( 9 ) , 4 + 9 ) , ( IF ( 3 , 9 , 9 ) / MIN ( 7 , 0 , 6 , 2 , 1 ) ) , N ( 3 + 4 ) , 1 * 1 + IF ( 1 , 9 , 2 ) ) .
+
+0  8  2  IF  MIN1  9  MIN1  4  9  +  MAX2  3  9  9  IF  7  0  6  2  1  MIN5  /  3  4  +  N  1  1  *  1  9  2  IF  +  MIN5
+IF 2 8 0
+MIN1 2                              // note that each MIN and MAX have their own number of arguments
+MIN1 9 2
++ 9 4 9 2
+MAX2 13 9 2
+IF 9 9 3 13 2
+MIN5 1 2 6 0 7 9 13 2
+/ 0 9 13 2
+ERROR                              // note the division by 0
+
+( MAX ( N ( 2 ) , 3 * 6 , ( 0 * 5 ) , N ( 4 ) , ( 4 - 9 ) ) + MIN ( MIN ( 8 , 0 , 2 , 2 , 0 , 4 ) ) ) .
+
+2  N  3  6  *  0  5  *  4  N  4  9  -  MAX5  8  0  2  2  0  4  MIN6  MIN1  +
+N 2
+* 6 3 -2
+* 5 0 18 -2
+N 4 0 18 -2
+- 9 4 -4 0 18 -2
+MAX5 -5 -4 0 18 -2
+MIN6 4 0 2 2 0 8 18
+MIN1 0 18
++ 0 18
+18
+
+N IF ( IF ( 8 , 9 , 6 ) , ( 1 * 2 ) , N 4 ) .
+
+8  9  6  IF  1  2  *  4  N  IF  N
+IF 6 9 8
+* 2 1 9
+N 4 2 9
+IF -4 2 9
+N 2
+-2
+
+( 9 / 7 ) - IF ( 5 , 5 , 7 ) - ( N 6 - IF ( 8 , 6 , 2 ) ) .
+
+9  7  /  5  5  7  IF  -  6  N  8  6  2  IF  -  -
+/ 7 9
+IF 7 5 5 1
+- 5 1
+N 6 -4
+IF 2 6 8 -6 -4
+- 6 -6 -4
+- -12 -4
+8
+
+N ( ( ( 0 * 0 ) + MAX ( 0 , 7 , 9 , 3 ) ) ) .
+
+0  0  *  0  7  9  3  MAX4  +  N
+* 0 0
+MAX4 3 9 7 0 0
++ 9 0
+N 9
+-9
+
+IF ( N 4 , IF ( 3 , 7 , 9 ) , N ( 8 ) ) + N ( 5 * 9 ) .
+
+4  N  3  7  9  IF  8  N  IF  5  9  *  N  +
+N 4
+IF 9 7 3 -4
+N 8 7 -4
+IF -8 7 -4
+* 9 5 -8
+N 45 -8
++ -45 -8
+-53
+
+MIN ( 3 - 9 * 2 / 7 , IF ( 2 + 7 , 0 - 6 , 8 + 0 ) , IF ( 6 * 5 , ( 5 / 8 ) , N ( 6 ) ) , MAX ( 4 , 4 , 4 , 1 ) / 7 * 1 , MIN ( MIN ( 7 , 6 , 0 , 0 , 6 ) , ( 0 * 3 ) , ( 6 * 1 ) , ( 8 + 1 ) ) , ( 7 - 5 + N 4 ) ) .
+
+3  9  2  *  7  /  -  2  7  +  0  6  -  8  0  +  IF  6  5  *  5  8  /  6  N  IF  4  4  4  1  MAX4  7  /  1  *  7  6  0  0  6  MIN5  0  3  *  6  1  *  8  1  +  MIN4  7  5  -  4  N  +  MIN6
+* 2 9 3
+/ 7 18 3
+- 2 3
++ 7 2 1
+- 6 0 9 1
++ 0 8 -6 9 1
+IF 8 -6 9 1
+* 5 6 -6 1
+/ 8 5 30 -6 1
+N 6 0 30 -6 1
+IF -6 0 30 -6 1
+MAX4 1 4 4 4 0 -6 1
+/ 7 4 0 -6 1
+* 1 0 0 -6 1
+MIN5 6 0 0 6 7 0 0 -6 1
+* 3 0 0 0 0 -6 1
+* 1 6 0 0 0 0 -6 1
++ 1 8 6 0 0 0 0 -6 1
+MIN4 9 6 0 0 0 0 -6 1
+- 5 7 0 0 0 -6 1
+N 4 2 0 0 0 -6 1
++ -4 2 0 0 0 -6 1
+MIN6 -2 0 0 0 -6 1
+-6
+
+N IF ( MIN ( 2 , 5 ) , ( 2 * 1 ) , MIN ( 3 , 7 , 3 , 3 , 7 , 5 ) ) .
+
+2  5  MIN2  2  1  *  3  7  3  3  7  5  MIN6  IF  N
+MIN2 5 2
+* 1 2 2
+MIN6 5 7 3 3 7 3 2 2
+IF 3 2 2
+N 2
+-2
+
+MAX ( IF ( 8 , 6 , 0 ) , ( 5 + 0 ) , IF ( 0 , 0 , 5 ) , MIN ( 4 ) ) - N 7 * 5 .
+
+8  6  0  IF  5  0  +  0  0  5  IF  4  MIN1  MAX4  7  N  5  *  -
+IF 0 6 8
++ 0 5 6
+IF 5 0 0 5 6
+MIN1 4 5 5 6
+MAX4 4 5 5 6
+N 7 6
+* 5 -7 6
+- -35 6
+41
+
+( MAX ( 0 ) + ( 4 - 1 ) ) + ( IF ( 3 , 7 , 3 ) + ( 8 - 7 ) ) .
+
+0  MAX1  4  1  -  +  3  7  3  IF  8  7  -  +  +
+MAX1 0
+- 1 4 0
++ 3 0
+IF 3 7 3 3
+- 7 8 7 3
++ 1 7 3
++ 8 3
+11
+
+IF ( ( N ( 7 ) / N ( 6 ) ) , ( 1 + 3 / N 0 ) , ( 2 / 2 ) / MIN ( 1 , 7 ) ) .
+
+7  N  6  N  /  1  3  0  N  /  +  2  2  /  1  7  MIN2  /  IF
+N 7
+N 6 -7
+/ -6 -7
+N 0 3 1 1
+/ 0 3 1 1
+ERROR
+
+( 2 + 6 + ( 5 / 5 ) * MIN ( IF ( 3 , 8 , 3 ) ) ) .
+
+2  6  +  5  5  /  3  8  3  IF  MIN1  *  +
++ 6 2
+/ 5 5 8
+IF 3 8 3 1 8
+MIN1 8 1 8
+* 8 1 8
++ 8 8
+16
+
+N ( ( 0 / 7 ) / 4 + 3 ) .
+
+0  7  /  4  /  3  +  N
+/ 7 0
+/ 4 0
++ 3 0
+N 3
+-3
+
+IF ( ( 5 + 6 / N ( 4 ) ) , MIN ( ( 1 - 7 ) , 0 / 6 , 6 + 4 , 9 / 1 , 0 - 4 , N 1 ) , N ( 2 * 2 ) ) .
+
+5  6  4  N  /  +  1  7  -  0  6  /  6  4  +  9  1  /  0  4  -  1  N  MIN6  2  2  *  N  IF
+N 4 6 5
+/ -4 6 5
++ -1 5
+- 7 1 4
+/ 6 0 -6 4
++ 4 6 0 -6 4
+/ 1 9 10 0 -6 4
+- 4 0 9 10 0 -6 4
+N 1 -4 9 10 0 -6 4
+MIN6 -1 -4 9 10 0 -6 4
+* 2 2 -6 4
+N 4 -6 4
+IF -4 -6 4
+-6
+
+N ( ( ( 7 + 4 ) + ( 6 / 3 ) ) ) .
+
+7  4  +  6  3  /  +  N
++ 4 7
+/ 3 6 11
++ 2 11
+N 13
+-13
+
+IF ( IF ( 7 , 9 , 5 ) / IF ( 8 , 2 , 5 ) , MIN ( IF ( 6 , 0 , 8 ) , N 0 , ( 3 / 0 ) ) , ( 8 - 6 / ( 9 - 9 ) ) ) .
+
+7  9  5  IF  8  2  5  IF  /  6  0  8  IF  0  N  3  0  /  MIN3  8  6  9  9  -  /  -  IF
+IF 5 9 7
+IF 5 2 8 9
+/ 2 9
+IF 8 0 6 4
+N 0 0 4
+/ 0 3 0 0 4
+ERROR
+
+( 5 - 4 ) / N 4 / N ( 0 + 9 ) .
+
+5  4  -  4  N  /  0  9  +  N  /
+- 4 5
+N 4 1
+/ -4 1
++ 9 0 0
+N 9 0
+/ -9 0
+0
+
+N ( MIN ( 1 , 1 , 6 , 1 , 7 ) + N ( 8 ) ) .
+
+1  1  6  1  7  MIN5  8  N  +  N
+MIN5 7 1 6 1 1
+N 8 1
++ -8 1
+N -7
+7
+
+</pre>
+</div></div>
+</div><!-- rigthside -->
+
+</body></html>
